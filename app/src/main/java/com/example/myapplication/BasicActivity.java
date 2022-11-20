@@ -13,6 +13,7 @@ public class BasicActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
     }
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
