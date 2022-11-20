@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1092911203177",
+    "project_id": "gonggi-25d70",
+    "storage_bucket": "gonggi-25d70.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092911203177:android:a0f82e31eaea1e225db3f8",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1092911203177-i4ah4mkcib0t6np5i5se5h6h5co93br4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1q9bpMqIde9QwzuV6jgWoBq9Zm6-iBrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1092911203177-i4ah4mkcib0t6np5i5se5h6h5co93br4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
