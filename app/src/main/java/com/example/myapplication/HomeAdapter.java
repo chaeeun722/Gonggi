@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.collection.SimpleArrayMap;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,14 +30,22 @@ import com.example.myapplication.R;
 import com.example.myapplication.WritePostActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder> {
     private ArrayList<PostInfo> mDataset;
@@ -43,6 +53,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
     private OnPostListener onPostListener;
     private FirebaseFirestore firebaseFirestore;
     private Util util;
+
+    Map<String, Boolean> likey = new HashMap<>();
 
 
     public static class MainViewHolder extends RecyclerView.ViewHolder {
@@ -111,6 +123,89 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
 
         LinearLayout contentsLayout = cardView.findViewById(R.id.contentsLayout);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        // like
+        Button likebtn = cardView.findViewById(R.id.likeBtn);
+        TextView likeCounter = cardView.findViewById(R.id.likeCounterTextView);
+        String  TAG = "like debug  :: ";
+        Log.d(TAG, (Integer.toString(mDataset.get(position).getLikesCount())));
+        likeCounter.setText("likescount : "+Integer.toString(mDataset.get(position).getLikesCount()));
+        String id = mDataset.get(position).getID();
+        PostInfo thisData = mDataset.get(position);
+        likebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                likey.clear();
+                likey.put(id,true);
+                Log.d(TAG, "1  ::  "+ likey.toString());
+                DocumentReference postDoc = firebaseFirestore.collection("posts").document(id);
+                Log.d(TAG, "2  ::  "+ postDoc);
+                if (thisData.getLikes().containsKey(id)){ //이미 눌렀던 상태
+                    Log.d(TAG, "3  ::  ");
+                    likebtn.setText("like"); // 다시 라이크로 돌리고
+                    thisData.setLikesCount(thisData.getLikesCount() - 1); // 좋아요 수 하나빼기
+                    thisData.getLikes().remove(id); // 눌럿던거 지우기
+                    likeCounter.setText(Integer.toString(thisData.getLikesCount()));
+                    postDoc.update("likesCount", thisData.getLikesCount() );
+                } else {
+                    Log.d(TAG, "4  ::  ");
+                    likebtn.setText("liked"); // 좋아요
+                    thisData.setLikesCount(thisData.getLikesCount() + 1); // 좋아요 수 +
+                    thisData.getLikes().put(id,true);
+                    likeCounter.setText(Integer.toString(thisData.getLikesCount())); // 카운터글씨를 다시 바꿔주기
+                    postDoc.update("likesCount", thisData.getLikesCount() );
+                }
+
+//                firebaseFirestore.runTransaction(new Transaction.Function<Void>() {
+//                    @Override
+//                    public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+//                        PostInfo postInfo =  transaction.get(postDoc).toObject(PostInfo.class);
+//                        Log.d(TAG, "3  ::  "+ postInfo);
+//                        if(postInfo.getLikes().containsKey(id)){
+//                            postInfo.setLikesCount(postInfo.getLikesCount() -1);
+//                            postInfo.getLikes().remove(id);
+//
+//                            firebaseFirestore.collection("posts").whereEqualTo("likes",likey)
+//                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                        @Override
+//                                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+//                                            if (value != null) {
+//                                                likeCounter.setText("Likes "+postInfo.getLikesCount());
+//                                                return;
+//                                            }
+//                                            for (DocumentSnapshot doc : value) {
+//                                            }
+//                                            notifyDataSetChanged();
+//                                        }
+//                                    });
+//                        }else{
+//                            postInfo.setLikesCount(postInfo.getLikesCount() +1);
+//                            postInfo.getLikes().put(id,true);
+//                            firebaseFirestore.collection("posts").whereEqualTo("likes",likey)
+//                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                                        @Override
+//                                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+//                                            if (value != null) {
+//                                                likeCounter.setText("Likes "+postInfo.getLikesCount());
+//                                                return;
+//                                            }
+//                                            for (DocumentSnapshot doc : value) {
+//                                            }
+//                                            notifyDataSetChanged();
+//                                        }
+//                                    });
+//                        }
+//                        transaction.set(postDoc,postInfo);
+//                        return null;
+//                    }
+//                });
+                //Log.d(TAG, likey.toString());
+                //likebtn.setText("liked");
+                //likeCounter.setText("1");
+            }
+        });
+
+
 
         contentsLayout.removeAllViews();
 

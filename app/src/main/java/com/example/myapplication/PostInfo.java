@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class PostInfo implements Serializable {
@@ -10,6 +11,8 @@ public class PostInfo implements Serializable {
     private String contents;
     private String publisher;
     private String id;
+    private int likesCount;
+    private Map<String,Boolean> likes  = new HashMap<>();
 
     public PostInfo(String title, String contents, String publisher, Date createdAt,String id){
 
@@ -18,6 +21,7 @@ public class PostInfo implements Serializable {
         this.publisher = publisher;
         this.createdAt = createdAt;
         this.id = id;
+        this.likesCount = 0;
     }
     public PostInfo(String title, String contents, String publisher, Date createdAt){
 
@@ -25,6 +29,7 @@ public class PostInfo implements Serializable {
         this.contents = contents;
         this.publisher = publisher;
         this.createdAt = createdAt;
+        this.likesCount = 0;
     }
 
 
@@ -38,4 +43,17 @@ public class PostInfo implements Serializable {
     public void setCreatedAt(Date createdAt){this.createdAt = createdAt;}
     public String getID(){return this.id;}
     public void setID(String id){this.id=id;}
+
+    public int getLikesCount() {
+        return likesCount;
+    }
+    public void setLikesCount(int likesCount) {
+        this.likesCount = likesCount;
+    }
+    public Map<String, Boolean> getLikes() {
+        return likes;
+    }
+    public void setLikes(Map<String, Boolean> likes) {
+        this.likes = likes;
+    }
 }
