@@ -21,7 +21,7 @@ public class PostInfo implements Serializable {
         this.publisher = publisher;
         this.createdAt = createdAt;
         this.id = id;
-        this.likesCount = 0;
+        //this.likesCount = 0;
     }
     public PostInfo(String title, String contents, String publisher, Date createdAt){
 
@@ -29,7 +29,7 @@ public class PostInfo implements Serializable {
         this.contents = contents;
         this.publisher = publisher;
         this.createdAt = createdAt;
-        this.likesCount = 0;
+        //this.likesCount = 0;
     }
 
 

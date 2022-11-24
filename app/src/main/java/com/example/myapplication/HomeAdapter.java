@@ -28,8 +28,10 @@ import android.widget.Toast;
 import com.example.myapplication.PostInfo;
 import com.example.myapplication.R;
 import com.example.myapplication.WritePostActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -129,8 +131,28 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
         TextView likeCounter = cardView.findViewById(R.id.likeCounterTextView);
         String  TAG = "like debug  :: ";
         Log.d(TAG, (Integer.toString(mDataset.get(position).getLikesCount())));
-        likeCounter.setText("likescount : "+Integer.toString(mDataset.get(position).getLikesCount()));
+
+
         String id = mDataset.get(position).getID();
+        DocumentReference postDoc = firebaseFirestore.collection("posts").document(id);
+        Log.d(TAG, "postDoc : "+postDoc.get().toString());
+        postDoc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        likeCounter.setText(document.get("likesCount").toString());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+//        likeCounter.setText("likescount : "+Integer.toString(mDataset.get(position).getLikesCount()));
         PostInfo thisData = mDataset.get(position);
         likebtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,7 +169,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                     thisData.getLikes().remove(id); // 눌럿던거 지우기
                     likeCounter.setText(Integer.toString(thisData.getLikesCount()));
                     postDoc.update("likesCount", thisData.getLikesCount() );
-                } else {
+                } else { // 좋아요 누르기
                     Log.d(TAG, "4  ::  ");
                     likebtn.setText("liked"); // 좋아요
                     thisData.setLikesCount(thisData.getLikesCount() + 1); // 좋아요 수 +
