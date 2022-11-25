@@ -14,7 +14,8 @@ public class LogoutActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logout);
-        findViewById(R.id.gotoLogoutButton).setOnClickListener(onClickListener);
+        findViewById(R.id.LogoutButton).setOnClickListener(onClickListener);
+        findViewById(R.id.revokeButton).setOnClickListener(onClickListener);
 
 
     }
@@ -23,10 +24,14 @@ public class LogoutActivity extends BasicActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.gotoLogoutButton:
+                case R.id.LogoutButton:
 
                     FirebaseAuth.getInstance().signOut();
                     myStartActivity(JoinActivity.class);
+                    break;
+                case R.id.revokeButton:
+                    FirebaseAuth.getInstance().getCurrentUser().delete();
+                    finishAffinity();
                     break;
             }
         }
