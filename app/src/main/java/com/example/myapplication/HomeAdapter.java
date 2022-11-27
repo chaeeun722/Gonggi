@@ -10,6 +10,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.collection.SimpleArrayMap;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.nfc.Tag;
 import android.service.autofill.Dataset;
 import android.util.Log;
 import android.util.Patterns;
@@ -32,6 +33,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -55,6 +58,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
     private OnPostListener onPostListener;
     private FirebaseFirestore firebaseFirestore;
     private Util util;
+
+    private FirebaseUser user;
+
 
     Map<String, Boolean> likey = new HashMap<>();
 
@@ -132,8 +138,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
         String  TAG = "like debug  :: ";
         Log.d(TAG, (Integer.toString(mDataset.get(position).getLikesCount())));
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        String currentUserUID = user.getUid();
+        Log.d(TAG, "current user : " + currentUserUID);
+
 
         String id = mDataset.get(position).getID();
+        PostInfo thisData = mDataset.get(position);
+        Map<String, Boolean> isAlreadyliked = new HashMap<>();
         DocumentReference postDoc = firebaseFirestore.collection("posts").document(id);
         Log.d(TAG, "postDoc : "+postDoc.get().toString());
         postDoc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -143,7 +155,24 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                        likeCounter.setText(document.get("likesCount").toString());
+                        likeCounter.setText(document.get("likesCount").toString()); // 디비에 있는 좋아요 수로 설정.
+                        thisData.setLikesCount(Integer.parseInt(document.get("likesCount").toString())); // thisData에 디비데이터 넣기
+                        Object likefromdoc = document.get("likes");
+                        if (likefromdoc == null){
+                            Log.d(TAG, "is already liked ::: no like ");
+                        } else {
+//                            Log.d(TAG, "is already liked ::: "+ likefromdoc.toString());
+                            String[] liked = likefromdoc.toString().split("=");
+//                            Log.d(TAG, "is already liked to string ::: "+  liked[0] + liked[1]);
+                            isAlreadyliked.put(liked[0], true);
+                            Log.d(TAG, "is already liked ::: "+ isAlreadyliked);
+                            thisData.setLikes(isAlreadyliked);
+                            Log.d(TAG, "onComplete: " + thisData.getLikes());
+                            if (thisData.getLikes().containsKey(currentUserUID)){
+                                Log.d(TAG, "is already liked :: make btn liked");
+                                likebtn.setText("liked");
+                            }
+                        }
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -153,27 +182,29 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
             }
         });
 //        likeCounter.setText("likescount : "+Integer.toString(mDataset.get(position).getLikesCount()));
-        PostInfo thisData = mDataset.get(position);
+
         likebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 likey.clear();
-                likey.put(id,true);
+                likey.put(currentUserUID,true);
                 Log.d(TAG, "1  ::  "+ likey.toString());
                 DocumentReference postDoc = firebaseFirestore.collection("posts").document(id);
                 Log.d(TAG, "2  ::  "+ postDoc);
-                if (thisData.getLikes().containsKey(id)){ //이미 눌렀던 상태
+                if (thisData.getLikes().containsKey(currentUserUID)){ //이미 눌렀던 상태
                     Log.d(TAG, "3  ::  ");
                     likebtn.setText("like"); // 다시 라이크로 돌리고
                     thisData.setLikesCount(thisData.getLikesCount() - 1); // 좋아요 수 하나빼기
-                    thisData.getLikes().remove(id); // 눌럿던거 지우기
+                    thisData.getLikes().remove(currentUserUID); // 눌럿던거 지우기
+                    postDoc.update("likes", null);
                     likeCounter.setText(Integer.toString(thisData.getLikesCount()));
                     postDoc.update("likesCount", thisData.getLikesCount() );
                 } else { // 좋아요 누르기
                     Log.d(TAG, "4  ::  ");
                     likebtn.setText("liked"); // 좋아요
                     thisData.setLikesCount(thisData.getLikesCount() + 1); // 좋아요 수 +
-                    thisData.getLikes().put(id,true);
+                    thisData.getLikes().put(currentUserUID,true);
+                    postDoc.update("likes", likey);
                     likeCounter.setText(Integer.toString(thisData.getLikesCount())); // 카운터글씨를 다시 바꿔주기
                     postDoc.update("likesCount", thisData.getLikesCount() );
                 }
