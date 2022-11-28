@@ -25,13 +25,13 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true">
-           
         </activity>
 
         <activity android:name=".LoginActivity"/>
         <activity android:name=".WritePostActivity"/>
         <activity android:name=".PostActivity"/>
         <activity android:name=".MyPostListActivity"/>
+        <activity android:name=".LogoutActivity"/>
 
 
     </application>

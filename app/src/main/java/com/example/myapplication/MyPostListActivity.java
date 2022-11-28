@@ -3,6 +3,7 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.audiofx.LoudnessEnhancer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +26,16 @@ public class MyPostListActivity extends AppCompatActivity {
                 finish(); //원래 액티비티 종료
             }
         });
-        //여기까지
-
+        //설정버튼 클릭시 액티비티 전환
+        Button setting_btn = (Button) findViewById(R.id.setting);
+        setting_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getApplicationContext(),LogoutActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0,0); //애니메이션 없애는거
+                finish(); //원래 액티비티 종료
+            }
+        });
     }
 }

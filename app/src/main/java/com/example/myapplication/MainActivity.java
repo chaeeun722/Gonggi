@@ -53,7 +53,17 @@ public class MainActivity extends BasicActivity {
                 finish(); //원래 액티비티 종료
             }
         });
-        //
+        //설정 버튼 클릭시 액티비티 전환
+        Button setting_btn = (Button) findViewById(R.id.setting);
+        setting_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getApplicationContext(),LogoutActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0,0); //애니메이션 없애는거
+                finish(); //원래 액티비티 종료
+            }
+        });
 
         setToolbarTitle(getResources().getString(R.string.app_name));
 
