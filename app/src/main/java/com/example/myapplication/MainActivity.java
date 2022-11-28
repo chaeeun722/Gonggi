@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,11 +42,23 @@ public class MainActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //내글 모아보기 버튼 클릭시 액태비티 전환
+        Button mypost_btn = (Button) findViewById(R.id.mypost);
+        mypost_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getApplicationContext(),MyPostListActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0,0); //애니메이션 없애는거
+                finish(); //원래 액티비티 종료
+            }
+        });
+        //
 
         setToolbarTitle(getResources().getString(R.string.app_name));
 
 
-            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (firebaseUser == null) {
             myStartActivity(JoinActivity.class);
@@ -235,6 +249,8 @@ public class MainActivity extends BasicActivity {
 //        intent.putExtra("postInfo", postInfo);
 //        startActivity(intent);
 //    }
+
+
 
 }
 
