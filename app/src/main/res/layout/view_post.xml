@@ -23,4 +23,31 @@
             android:gravity="end"
             tools:text="2022-11-14" />
 
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/likeBtn"
+                    android:text="like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true" />
+
+                <TextView
+                    android:id="@+id/likeCounterTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="777" />
+
+        </LinearLayout>
+
+
+
+
+
     </merge>
