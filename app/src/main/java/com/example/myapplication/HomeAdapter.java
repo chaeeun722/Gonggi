@@ -63,6 +63,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
 
 
     Map<String, Boolean> likey = new HashMap<>();
+    Object likefromdoc;
 
 
     public static class MainViewHolder extends RecyclerView.ViewHolder {
@@ -102,12 +103,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
             }
         });
 
-//        cardView.findViewById(R.id.menu).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                showPopup(view,mainViewHolder.getAdapterPosition());
-//            }
-//        });
 
         cardView.findViewById(R.id.menu).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,21 +152,25 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         likeCounter.setText(document.get("likesCount").toString()); // 디비에 있는 좋아요 수로 설정.
                         thisData.setLikesCount(Integer.parseInt(document.get("likesCount").toString())); // thisData에 디비데이터 넣기
-                        Object likefromdoc = document.get("likes");
+                        likefromdoc = document.get("likes");
                         if (likefromdoc == null){
                             Log.d(TAG, "is already liked ::: no like ");
-                        } else {
+                        } else { // 좋아요 했을때
 //                            Log.d(TAG, "is already liked ::: "+ likefromdoc.toString());
                             String[] liked = likefromdoc.toString().split("=");
 //                            Log.d(TAG, "is already liked to string ::: "+  liked[0] + liked[1]);
-                            isAlreadyliked.put(liked[0], true);
+                            isAlreadyliked.put(liked[0], true); // likes map 객체 넣기
                             Log.d(TAG, "is already liked ::: "+ isAlreadyliked);
                             thisData.setLikes(isAlreadyliked);
                             Log.d(TAG, "onComplete: " + thisData.getLikes());
-                            if (thisData.getLikes().containsKey(currentUserUID)){
+                            if (liked[0].contains(currentUserUID)){
                                 Log.d(TAG, "is already liked :: make btn liked");
                                 likebtn.setText("liked");
                             }
+//                            if (thisData.getLikes().containsKey(currentUserUID)){
+//                                Log.d(TAG, "is already liked :: make btn liked");
+//                                likebtn.setText("liked");
+//                            }
                         }
                     } else {
                         Log.d(TAG, "No such document");
@@ -191,6 +190,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                 Log.d(TAG, "1  ::  "+ likey.toString());
                 DocumentReference postDoc = firebaseFirestore.collection("posts").document(id);
                 Log.d(TAG, "2  ::  "+ postDoc);
+//                if (likefromdoc.toString().split("=")[0].contains(currentUserUID)){
+//
+//                }
                 if (thisData.getLikes().containsKey(currentUserUID)){ //이미 눌렀던 상태
                     Log.d(TAG, "3  ::  ");
                     likebtn.setText("like"); // 다시 라이크로 돌리고
@@ -208,56 +210,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                     likeCounter.setText(Integer.toString(thisData.getLikesCount())); // 카운터글씨를 다시 바꿔주기
                     postDoc.update("likesCount", thisData.getLikesCount() );
                 }
-
-//                firebaseFirestore.runTransaction(new Transaction.Function<Void>() {
-//                    @Override
-//                    public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-//                        PostInfo postInfo =  transaction.get(postDoc).toObject(PostInfo.class);
-//                        Log.d(TAG, "3  ::  "+ postInfo);
-//                        if(postInfo.getLikes().containsKey(id)){
-//                            postInfo.setLikesCount(postInfo.getLikesCount() -1);
-//                            postInfo.getLikes().remove(id);
-//
-//                            firebaseFirestore.collection("posts").whereEqualTo("likes",likey)
-//                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                                        @Override
-//                                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-//                                            if (value != null) {
-//                                                likeCounter.setText("Likes "+postInfo.getLikesCount());
-//                                                return;
-//                                            }
-//                                            for (DocumentSnapshot doc : value) {
-//                                            }
-//                                            notifyDataSetChanged();
-//                                        }
-//                                    });
-//                        }else{
-//                            postInfo.setLikesCount(postInfo.getLikesCount() +1);
-//                            postInfo.getLikes().put(id,true);
-//                            firebaseFirestore.collection("posts").whereEqualTo("likes",likey)
-//                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                                        @Override
-//                                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-//                                            if (value != null) {
-//                                                likeCounter.setText("Likes "+postInfo.getLikesCount());
-//                                                return;
-//                                            }
-//                                            for (DocumentSnapshot doc : value) {
-//                                            }
-//                                            notifyDataSetChanged();
-//                                        }
-//                                    });
-//                        }
-//                        transaction.set(postDoc,postInfo);
-//                        return null;
-//                    }
-//                });
-                //Log.d(TAG, likey.toString());
-                //likebtn.setText("liked");
-                //likeCounter.setText("1");
             }
         });
-
 
 
         contentsLayout.removeAllViews();
