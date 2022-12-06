@@ -40,6 +40,7 @@ public class CmtAdapter extends RecyclerView.Adapter<CmtAdapter.MainViewHolder> 
     private FirebaseFirestore firebaseFirestore;
     private Util util;
     private FirebaseUser user;
+    private
 
 
     Map<String, Boolean> likey = new HashMap<>();
@@ -59,9 +60,6 @@ public class CmtAdapter extends RecyclerView.Adapter<CmtAdapter.MainViewHolder> 
         firebaseFirestore = FirebaseFirestore.getInstance();
     }
 
-    public void setOnPostListener(OnPostListener onPostListener){
-        this.onPostListener = onPostListener;
-    }
 
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.app.AlertDialog;
@@ -57,13 +58,11 @@ public class PostActivity extends BasicActivity {
     Object likefromdoc;
 
     private CollectionReference collectionReference;
-    private HomeAdapter homeAdapter;
     public  CmtAdapter cmtAdapter;
     private ArrayList<PostInfo> postList;
-    private Util util;
 
     //댓글
-    ImageButton btn_r_write;
+    Button btn_r_write;
     EditText input_r_content;
     RecyclerView recyclerView;
     private LinearLayout parent;
@@ -85,7 +84,7 @@ public class PostActivity extends BasicActivity {
 
         //댓글
         input_r_content = (EditText) findViewById(R.id.input_r_content);
-        btn_r_write = this.<ImageButton>findViewById(R.id.btn_r_write);
+        btn_r_write = (Button) findViewById(R.id.btn_r_write);
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
 
 
@@ -223,6 +222,7 @@ public class PostActivity extends BasicActivity {
             CollectionReference collectionReference = firebaseFirestore.collection("comments");
             collectionReference.orderBy("createdAt", Query.Direction.DESCENDING).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
@@ -233,7 +233,7 @@ public class PostActivity extends BasicActivity {
                                             new Date(document.getDate("createdAt").getTime())));
 
                                 }
-                                homeAdapter.notifyDataSetChanged();
+                                cmtAdapter.notifyDataSetChanged();
                             } else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }
@@ -249,7 +249,6 @@ public class PostActivity extends BasicActivity {
     //댓글 파이어베이스 연결
     private void post() {
         final String comment = ((EditText) findViewById(R.id.input_r_content)).getText().toString();
-        input_r_content.setText(""); //글쓰고 나서 텍스트 창 초기화
         if (comment.length() > 0) {
             //loaderLayout.setVisibility(View.VISIBLE);
             user = FirebaseAuth.getInstance().getCurrentUser();
@@ -266,6 +265,7 @@ public class PostActivity extends BasicActivity {
 
             postInfo = new PostInfo(comment, user.getUid(), new Date());
         }
+        input_r_content.setText(""); //글쓰고 나서 텍스트 창 초기화
     }
 
 /*    @Override
