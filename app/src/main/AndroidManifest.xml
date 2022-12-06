@@ -34,6 +34,7 @@
         <activity android:name=".LogoutActivity"/>
 
 
+
     </application>
 
 </manifest>
