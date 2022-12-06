@@ -285,6 +285,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                 String id = mDataset.get(position).getID();
                 switch (menuItem.getItemId()) {
                     case R.id.modify:
+                        //
+
                         onPostListener.onModify(id);
                         return true;
                     case R.id.delete:

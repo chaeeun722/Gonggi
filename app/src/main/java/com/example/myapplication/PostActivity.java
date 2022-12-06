@@ -1,15 +1,20 @@
 package com.example.myapplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -34,17 +39,23 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class PostActivity extends BasicActivity {
-
-    private FirebaseFirestore firestore;
-    String TAG = "post activity :: ";
-    private FirebaseUser user;
+    private ArrayList<PostInfo> mDataset;
+    private Activity activity;
+    private OnPostListener onPostListener;
     private FirebaseFirestore firebaseFirestore;
+    private Util util;
+    private FirebaseUser user;
+
+    String TAG = "post activity :: ";
     Map<String, Boolean> likey = new HashMap<>();
+
+
 
 
 
@@ -57,7 +68,6 @@ public class PostActivity extends BasicActivity {
 //        String thispostID = postInfo.getID().toString();
 //
 //        Log.d(TAG, " this document: " + thispostID);
-
 
 
 
@@ -136,14 +146,11 @@ public class PostActivity extends BasicActivity {
     }
 
 
-
-
-    @Override
+/*    @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.post,menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
+    }*/
 
 }
 
