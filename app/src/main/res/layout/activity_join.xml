@@ -67,7 +67,7 @@
                 android:id="@+id/gotoLoginButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="로그인" />
+                android:text="로그인하러 가기" />
         </LinearLayout>
 
     </LinearLayout>

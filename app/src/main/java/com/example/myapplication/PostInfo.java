@@ -30,6 +30,7 @@ public class PostInfo implements Serializable {
         this.contents = contents;
         this.publisher = publisher;
         this.createdAt = createdAt;
+        this.id = id;
         //this.likesCount = 0;
     }
     //댓글

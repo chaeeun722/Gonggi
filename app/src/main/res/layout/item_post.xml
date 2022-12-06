@@ -35,6 +35,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_weight="0"
+                android:visibility="invisible"
                 app:cardCornerRadius="20dp">
 
                 <ImageView

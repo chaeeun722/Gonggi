@@ -1,16 +1,23 @@
 package com.example.myapplication;
 
+
+import android.app.Activity;
+import android.content.Intent;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,16 +35,23 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PostActivity extends BasicActivity {
+    private ArrayList<PostInfo> mDataset;
+    private Activity activity;
+    private OnPostListener onPostListener;
+    private FirebaseFirestore firebaseFirestore;
+    private Util util;
+    private FirebaseUser user;
 
     String TAG = "post activity :: ";
-    private FirebaseUser user;
-    private FirebaseFirestore firebaseFirestore;
     Map<String, Boolean> likey = new HashMap<>();
 
     private CollectionReference collectionReference;
@@ -52,6 +66,8 @@ public class PostActivity extends BasicActivity {
     RecyclerView recyclerView;
     private LinearLayout parent;
     private PostInfo postInfo;
+
+
 
 
 
@@ -106,7 +122,6 @@ public class PostActivity extends BasicActivity {
                 alert.show();
             }
         });
-
 
 
         ReadContentsView readContentsView = findViewById(R.id.readContentsView);
@@ -239,14 +254,11 @@ public class PostActivity extends BasicActivity {
         }
     }
 
-
-
-    @Override
+/*    @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.post,menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
+    }*/
 
 }
 
