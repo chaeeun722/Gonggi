@@ -53,6 +53,8 @@ public class PostActivity extends BasicActivity {
 
     String TAG = "post activity :: ";
     Map<String, Boolean> likey = new HashMap<>();
+    Map<String, Boolean> isAlreadyliked = new HashMap<>();
+    Object likefromdoc;
 
     private CollectionReference collectionReference;
     private HomeAdapter homeAdapter;
@@ -123,7 +125,6 @@ public class PostActivity extends BasicActivity {
             }
         });
 
-
         ReadContentsView readContentsView = findViewById(R.id.readContentsView);
         readContentsView.setPostInfo(postInfo);
 
@@ -151,6 +152,23 @@ public class PostActivity extends BasicActivity {
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         likeCounter.setText(document.get("likesCount").toString()); // 디비에 있는 좋아요 수로 설정.
+                        postInfo.setLikesCount(Integer.parseInt(document.get("likesCount").toString())); // thisData에 디비데이터 넣기
+                        likefromdoc = document.get("likes");
+                        if (likefromdoc == null){
+                            Log.d(TAG, "is already liked ::: no like ");
+                        } else { // 좋아요 했을때
+//                            Log.d(TAG, "is already liked ::: "+ likefromdoc.toString());
+                            String[] liked = likefromdoc.toString().split("=");
+//                            Log.d(TAG, "is already liked to string ::: "+  liked[0] + liked[1]);
+                            isAlreadyliked.put(liked[0], true); // likes map 객체 넣기
+                            Log.d(TAG, "is already liked ::: "+ isAlreadyliked);
+                            postInfo.setLikes(isAlreadyliked);
+                            Log.d(TAG, "onComplete: " + postInfo.getLikes());
+                            if (liked[0].contains(currentUserUID)){
+                                Log.d(TAG, "is already liked :: make btn liked");
+                                likebtn.setText("liked");
+                            }
+                        }
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -159,10 +177,6 @@ public class PostActivity extends BasicActivity {
                 }
             }
         });
-
-
-
-
 
 
         likebtn.setOnClickListener(new View.OnClickListener() {
