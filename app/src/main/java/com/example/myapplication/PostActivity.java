@@ -1,24 +1,27 @@
 package com.example.myapplication;
 
+
 import android.app.Activity;
 import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,17 +34,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-
-
 
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class PostActivity extends BasicActivity {
@@ -54,6 +53,19 @@ public class PostActivity extends BasicActivity {
 
     String TAG = "post activity :: ";
     Map<String, Boolean> likey = new HashMap<>();
+
+    private CollectionReference collectionReference;
+    private HomeAdapter homeAdapter;
+    public  CmtAdapter cmtAdapter;
+    private ArrayList<PostInfo> postList;
+    private Util util;
+
+    //댓글
+    ImageButton btn_r_write;
+    EditText input_r_content;
+    RecyclerView recyclerView;
+    private LinearLayout parent;
+    private PostInfo postInfo;
 
 
 
@@ -69,6 +81,47 @@ public class PostActivity extends BasicActivity {
 //
 //        Log.d(TAG, " this document: " + thispostID);
 
+        //댓글
+        input_r_content = (EditText) findViewById(R.id.input_r_content);
+        btn_r_write = this.<ImageButton>findViewById(R.id.btn_r_write);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler);
+
+
+
+        postList = new ArrayList<>();
+        cmtAdapter = new CmtAdapter(PostActivity.this, postList);
+
+        RecyclerView recyclerView = findViewById(R.id.recycler);
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(PostActivity.this));
+        recyclerView.setAdapter(cmtAdapter);
+
+
+
+        //댓글버튼 클릭시! alert창
+        btn_r_write.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alert_confirm = new AlertDialog.Builder(PostActivity.this);
+                alert_confirm.setMessage("댓글을 게시하겠습니까?").setCancelable(false).setPositiveButton("확인",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                post();
+                            }
+                        }).setNegativeButton("취소",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                AlertDialog alert = alert_confirm.create();
+                alert.show();
+            }
+        });
 
 
         ReadContentsView readContentsView = findViewById(R.id.readContentsView);
@@ -145,6 +198,61 @@ public class PostActivity extends BasicActivity {
 
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        postsUpdate();
+    }
+
+    private void postsUpdate(){
+        if (user != null) {
+            CollectionReference collectionReference = firebaseFirestore.collection("comments");
+            collectionReference.orderBy("createdAt", Query.Direction.DESCENDING).get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                postList.clear();
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    postList.add(new PostInfo(
+                                            document.getData().get("comment").toString(),
+                                            new Date(document.getDate("createdAt").getTime())));
+
+                                }
+                                homeAdapter.notifyDataSetChanged();
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
+        }
+    }
+
+
+
+
+
+    //댓글 파이어베이스 연결
+    private void post() {
+        final String comment = ((EditText) findViewById(R.id.input_r_content)).getText().toString();
+        input_r_content.setText(""); //글쓰고 나서 텍스트 창 초기화
+        if (comment.length() > 0) {
+            //loaderLayout.setVisibility(View.VISIBLE);
+            user = FirebaseAuth.getInstance().getCurrentUser();
+
+            FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+            String id = getIntent().getStringExtra("id");
+            DocumentReference dr;
+            if(id == null){
+                dr = firebaseFirestore.collection("comments").document();
+            }else{
+                dr = firebaseFirestore.collection("comments").document(id);
+            }
+            final DocumentReference documentReference = dr;
+
+            postInfo = new PostInfo(comment, user.getUid(), new Date());
+        }
+    }
 
 /*    @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -153,4 +261,19 @@ public class PostActivity extends BasicActivity {
     }*/
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

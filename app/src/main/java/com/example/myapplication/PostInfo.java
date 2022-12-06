@@ -8,6 +8,7 @@ import java.util.Map;
 public class PostInfo implements Serializable {
     private Date createdAt;
     private String title;
+    private String comment;
     private String contents;
     private String publisher;
     private String id;
@@ -32,6 +33,20 @@ public class PostInfo implements Serializable {
         this.id = id;
         //this.likesCount = 0;
     }
+    //댓글
+    public PostInfo(String comment, Date createdAt){
+
+        this.comment = comment;
+        this.createdAt = createdAt;
+    }
+
+    public PostInfo(String comment, String publisher, Date createdAt){
+
+        this.comment = comment;
+        this.publisher = publisher;
+        this.createdAt = createdAt;
+    }
+
 
 
     public String getTitle(){return this.title;}
@@ -57,4 +72,7 @@ public class PostInfo implements Serializable {
     public void setLikes(Map<String, Boolean> likes) {
         this.likes = likes;
     }
+
+    public String getComment(){return this.comment;}
+    public void setComment(String comment){this.comment= comment;}
 }

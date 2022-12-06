@@ -1,34 +1,22 @@
 package com.example.myapplication;
 
 import android.app.Activity;
-import android.content.Intent;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.collection.SimpleArrayMap;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.nfc.Tag;
-import android.service.autofill.Dataset;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.PostInfo;
-import com.example.myapplication.R;
-import com.example.myapplication.WritePostActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,27 +25,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.Transaction;
-import org.w3c.dom.Text;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder> {
+public class CmtAdapter extends RecyclerView.Adapter<CmtAdapter.MainViewHolder> {
     private ArrayList<PostInfo> mDataset;
     private Activity activity;
     private OnPostListener onPostListener;
     private FirebaseFirestore firebaseFirestore;
     private Util util;
-
     private FirebaseUser user;
 
 
@@ -72,7 +53,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
         }
     }
 
-    public HomeAdapter(Activity activity, ArrayList<PostInfo> myDataset) {
+    public CmtAdapter(Activity activity, ArrayList<PostInfo> myDataset) {
         this.mDataset = myDataset;
         this.activity = activity;
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -82,6 +63,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
         this.onPostListener = onPostListener;
     }
 
+
     @Override
     public int getItemViewType(int position){
         return position;
@@ -89,31 +71,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
 
     @NonNull
     @Override
-    public HomeAdapter.MainViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent, false);
+    public CmtAdapter.MainViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.view_cmt, parent, false);
         final MainViewHolder mainViewHolder = new MainViewHolder(cardView);
-        cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(activity,PostActivity.class);
-                intent.putExtra("postInfo",mDataset.get(mainViewHolder.getAdapterPosition()));
-                activity.startActivity(intent);
-            }
-        });
-
-//        cardView.findViewById(R.id.menu).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                showPopup(view,mainViewHolder.getAdapterPosition());
-//            }
-//        });
-
-        cardView.findViewById(R.id.menu).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopup(v, mainViewHolder.getAdapterPosition());
-            }
-        });
 
         return mainViewHolder;
     }
@@ -130,6 +90,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
 
         LinearLayout contentsLayout = cardView.findViewById(R.id.contentsLayout);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        //댓글
+        TextView CmtView = cardView.findViewById(R.id.CmtView);
+        CmtView.setText(mDataset.get(position).getComment());
 
         // like
         Button likebtn = cardView.findViewById(R.id.likeBtn);
@@ -154,7 +117,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-  //                      likeCounter.setText(document.get("likesCount").toString()); // 디비에 있는 좋아요 수로 설정.
+                        likeCounter.setText(document.get("likesCount").toString()); // 디비에 있는 좋아요 수로 설정.
                         thisData.setLikesCount(Integer.parseInt(document.get("likesCount").toString())); // thisData에 디비데이터 넣기
                         Object likefromdoc = document.get("likes");
                         if (likefromdoc == null){
@@ -284,8 +247,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                 String id = mDataset.get(position).getID();
                 switch (menuItem.getItemId()) {
                     case R.id.modify:
-                        //
-
                         onPostListener.onModify(id);
                         return true;
                     case R.id.delete:
