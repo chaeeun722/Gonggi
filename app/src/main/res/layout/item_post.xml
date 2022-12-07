@@ -23,6 +23,7 @@
                 android:id="@+id/titleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:text="TextView"
                 android:textColor="@color/black"
@@ -58,7 +59,10 @@
         <com.example.myapplication.ReadContentsView
             android:id="@+id/readContentsView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="7dp"
+            android:layout_marginBottom="5dp">
 
         </com.example.myapplication.ReadContentsView>
 
