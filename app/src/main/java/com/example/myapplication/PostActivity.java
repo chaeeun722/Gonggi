@@ -60,7 +60,6 @@ public class PostActivity extends BasicActivity {
     private HomeAdapter homeAdapter;
     public  CmtAdapter cmtAdapter;
     private ArrayList<PostInfo> postList;
-    private Util util;
 
     //댓글
     ImageButton btn_r_write;
