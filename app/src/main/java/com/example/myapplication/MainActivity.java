@@ -33,7 +33,7 @@ public class MainActivity extends BasicActivity {
     private FirebaseUser firebaseUser;
     private FirebaseFirestore firebaseFirestore;
     private CollectionReference collectionReference;
-    private HomeAdapter homeAdapter;
+    private HomeAdapter2 homeAdapter;
     private ArrayList<PostInfo> postList;
     private Util util;
 
@@ -110,7 +110,7 @@ public class MainActivity extends BasicActivity {
 
         util = new Util(this);
         postList = new ArrayList<>();
-        homeAdapter = new HomeAdapter(MainActivity.this, postList);
+        homeAdapter = new HomeAdapter2(MainActivity.this, postList);
         homeAdapter.setOnPostListener(onPostListener);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
