@@ -27,16 +27,21 @@
 
     <Button
         android:id="@+id/LogoutButton"
-        android:layout_width="match_parent"
+        android:layout_width="400dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/textView"
-        android:text="로그아웃" />
+        android:layout_centerInParent="true"
+        android:backgroundTint="#b7e5ff"
+        android:text="로그아웃"
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/revokeButton"
-        android:layout_width="match_parent"
+        android:layout_width="400dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/LogoutButton"
+        android:layout_centerInParent="true"
+        android:backgroundTint="#b7e5ff"
         android:text="회원탈퇴" />
 
     <LinearLayout

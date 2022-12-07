@@ -41,7 +41,7 @@
         android:layout_alignParentBottom="false"
         android:clickable="true"
         android:paddingBottom="10dp"
-        app:backgroundTint="#03A9F4"
+        app:backgroundTint="#b7e5fe"
         app:srcCompat="@drawable/ic_baseline_add_circle_outline_24"
         tools:ignore="SpeakableTextPresentCheck" />
 
