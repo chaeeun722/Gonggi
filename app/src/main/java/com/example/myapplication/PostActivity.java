@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.app.AlertDialog;
@@ -38,7 +39,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,20 +57,15 @@ public class PostActivity extends BasicActivity {
     Object likefromdoc;
 
     private CollectionReference collectionReference;
-    private HomeAdapter homeAdapter;
     public  CmtAdapter cmtAdapter;
-    private ArrayList<PostInfo> postList;
-    private Util util;
+    ArrayList<PostInfo> postList = new ArrayList<>();
 
     //댓글
-    ImageButton btn_r_write;
+    Button btn_r_write;
     EditText input_r_content;
     RecyclerView recyclerView;
     private LinearLayout parent;
-    private PostInfo postInfo;
-
-
-
+    PostInfo postInfo;
 
 
     @Override
@@ -78,28 +73,22 @@ public class PostActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        PostInfo postInfo = (PostInfo) getIntent().getSerializableExtra("postInfo");
+        postInfo = (PostInfo) getIntent().getSerializableExtra("postInfo");
 //        String thispostID = postInfo.getID().toString();
 //
 //        Log.d(TAG, " this document: " + thispostID);
 
         //댓글
         input_r_content = (EditText) findViewById(R.id.input_r_content);
-        btn_r_write = this.<ImageButton>findViewById(R.id.btn_r_write);
+        btn_r_write = (Button) findViewById(R.id.btn_r_write);
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
 
-
-
-        postList = new ArrayList<>();
-        cmtAdapter = new CmtAdapter(PostActivity.this, postList);
+        cmtAdapter = new CmtAdapter(postList);
 
         RecyclerView recyclerView = findViewById(R.id.recycler);
 
-        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(PostActivity.this));
         recyclerView.setAdapter(cmtAdapter);
-
-
 
         //댓글버튼 클릭시! alert창
         btn_r_write.setOnClickListener(new View.OnClickListener() {
@@ -110,8 +99,8 @@ public class PostActivity extends BasicActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
                                 post();
+                                postsUpdate();
                             }
                         }).setNegativeButton("취소",
                         new DialogInterface.OnClickListener() {
@@ -207,6 +196,32 @@ public class PostActivity extends BasicActivity {
             }
         });
 
+        CollectionReference collectionReference = firebaseFirestore.collection("comments")
+                .document(postInfo.getTitle())
+                .collection(postInfo.getTitle());
+
+        collectionReference
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            postList.clear();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                postList.add(new PostInfo(
+                                        document.getData().get("comment").toString(),
+                                        new Date(document.getDate("createdAt").getTime())));
+
+                            }
+                            cmtAdapter.notifyDataSetChanged();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
 
         setToolbarTitle(postInfo.getTitle());
 
@@ -215,57 +230,62 @@ public class PostActivity extends BasicActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        postsUpdate();
     }
 
     private void postsUpdate(){
-        if (user != null) {
-            CollectionReference collectionReference = firebaseFirestore.collection("comments");
-            collectionReference.orderBy("createdAt", Query.Direction.DESCENDING).get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                postList.clear();
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    postList.add(new PostInfo(
-                                            document.getData().get("comment").toString(),
-                                            new Date(document.getDate("createdAt").getTime())));
+        //이 함수를 통해서 firestore에서 값을 불러오는 것 같은데
+        //이걸 collection("comments").document("문제 제목").collection("문제 제목").get()으로 해주면 될 듯
+        //field 값은 comment와 createdAt 그대로 쓰는 것 추천
+        //그리고 이걸 onResume에 넣지 말고 post()가 있는 다음에 넣어서 댓글을 달면 update하게 하면 될 듯
+        //만약 제대로 결과가 나오지 않는다면 post() 안에 넣어서 post()가 다 실행된 다음 작동하게 만들어주기
+        CollectionReference collectionReference = firebaseFirestore.collection("comments")
+                .document(postInfo.getTitle())
+                .collection(postInfo.getTitle());
 
-                                }
-                                homeAdapter.notifyDataSetChanged();
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
+        collectionReference
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            postList.clear();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                postList.add(new PostInfo(
+                                        document.getData().get("comment").toString(),
+                                        new Date(document.getDate("createdAt").getTime())));
+
                             }
+                            cmtAdapter.notifyDataSetChanged();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
-                    });
-        }
+                    }
+                });
     }
-
-
-
-
 
     //댓글 파이어베이스 연결
     private void post() {
-        final String comment = ((EditText) findViewById(R.id.input_r_content)).getText().toString();
-        input_r_content.setText(""); //글쓰고 나서 텍스트 창 초기화
+        String comment = ((EditText) findViewById(R.id.input_r_content)).getText().toString();
+        Date date = new Date();
+
+        Map<String, Object> cmtBase = new HashMap<>();
+        cmtBase.put("comment", comment);
+        cmtBase.put("createdAt", date);
+
         if (comment.length() > 0) {
-            //loaderLayout.setVisibility(View.VISIBLE);
             user = FirebaseAuth.getInstance().getCurrentUser();
 
             FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-            String id = getIntent().getStringExtra("id");
-            DocumentReference dr;
-            if(id == null){
-                dr = firebaseFirestore.collection("comments").document();
-            }else{
-                dr = firebaseFirestore.collection("comments").document(id);
-            }
-            final DocumentReference documentReference = dr;
 
-            postInfo = new PostInfo(comment, user.getUid(), new Date());
+            firebaseFirestore.collection("comments")
+                    .document(postInfo.getTitle())
+                    .collection(postInfo.getTitle())
+                    .document()
+                    .set(cmtBase);
         }
+        input_r_content.setText(""); //글쓰고 나서 텍스트 창 초기화
     }
 
 /*    @Override
@@ -275,19 +295,5 @@ public class PostActivity extends BasicActivity {
     }*/
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

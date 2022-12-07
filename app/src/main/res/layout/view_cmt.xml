@@ -13,6 +13,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -21,16 +22,20 @@
 
 
         <TextView
-            android:id="@+id/CmtView"
+            android:id="@+id/cmtView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:text="comment"
             android:textColor="#333333" />
 
-        <com.example.myapplication.ReadContentsView
+        <TextView
+            android:id="@+id/date"
+            android:padding="5dp"
+            android:gravity="end"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:text="date"/>
 
         <View
             android:layout_width="match_parent"

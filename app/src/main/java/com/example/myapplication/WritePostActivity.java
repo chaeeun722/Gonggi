@@ -35,11 +35,11 @@ public class WritePostActivity extends BasicActivity {
     private FirebaseUser user;
     Uri uri;
     ImageView imageView;
-//    private StorageReference storageRef;
+    //    private StorageReference storageRef;
 //    private ArrayList<String> pathList = new ArrayList<>();
     private LinearLayout parent;
     private RelativeLayout buttonsBackgroundLayout;
-//    private RelativeLayout loaderLayout; view loader 적용 안함
+    //    private RelativeLayout loaderLayout; view loader 적용 안함
 //    private ImageView selectedImageVIew;
 //    private EditText selectedEditText;
     private EditText contentsEditText;
@@ -252,7 +252,7 @@ public class WritePostActivity extends BasicActivity {
             String id = getIntent().getStringExtra("id");
             DocumentReference dr;
             if(id == null){
-                dr = firebaseFirestore.collection("posts").document();
+                dr = firebaseFirestore.collection("posts").document(title);
             }else{
                 dr = firebaseFirestore.collection("posts").document(id);
             }
@@ -281,16 +281,16 @@ public class WritePostActivity extends BasicActivity {
 
     private void storeUpload(DocumentReference documentReference, PostInfo postInfo){
         documentReference.set(postInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "DocumentSnapshot successfully written!" + documentReference.getId());
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!" + documentReference.getId());
 //                loaderLayout.setVisibility(View.GONE);
 //                Intent resultIntent = new Intent();
 //                resultIntent.putExtra("postinfo", postInfo);
 //                setResult(Activity.RESULT_OK, resultIntent);
-                finish();
-            }
-        })
+                        finish();
+                    }
+                })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -307,5 +307,3 @@ public class WritePostActivity extends BasicActivity {
         startActivityForResult(intent, requestCode);
     }
 }
-
-
