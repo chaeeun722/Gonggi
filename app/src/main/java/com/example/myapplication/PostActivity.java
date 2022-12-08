@@ -120,7 +120,7 @@ public class PostActivity extends BasicActivity {
 
         Button likebtn = findViewById(R.id.likeBtn);
         TextView likeCounter = findViewById(R.id.likeCounterTextView);
-        String  TAG = "like debug  :: ";
+        String  TAG = "like debug  :: post :: ";
         Log.d(TAG, (Integer.toString(postInfo.getLikesCount())));
 
         user = FirebaseAuth.getInstance().getCurrentUser();
