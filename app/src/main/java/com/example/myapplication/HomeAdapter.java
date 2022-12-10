@@ -153,7 +153,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                         likeCounter.setText(document.get("likesCount").toString()); // 디비에 있는 좋아요 수로 설정.
                         thisData.setLikesCount(Integer.parseInt(document.get("likesCount").toString())); // thisData에 디비데이터 넣기
                         likefromdoc = document.get("likes");
-                        if (likefromdoc == null){
+                        Object likefromdoclikecnt = document.get("likesCount");
+                        int likefromdoclikecntToint = Integer.parseInt(likefromdoclikecnt.toString());
+                        Log.d(TAG, "likefromdoc count :::  " + likefromdoclikecnt);
+                        if (likefromdoc == null || (likefromdoclikecntToint == 0)){
                             Log.d(TAG, "is already liked ::: no like ");
                             likebtn.setText("like");
                         } else { // 좋아요 했을때
