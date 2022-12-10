@@ -62,6 +62,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
 
 
     Map<String, Boolean> likey = new HashMap<>();
+    Map<String, Boolean> likeyCancel = new HashMap<>();
     Object likefromdoc;
 
 
@@ -129,7 +130,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
         // like
         Button likebtn = cardView.findViewById(R.id.likeBtn);
         TextView likeCounter = cardView.findViewById(R.id.likeCounterTextView);
-        String  TAG = "like debug  :: homeadapter :: ";
+        String  TAG = "like debug :: hmad ";
         Log.d(TAG, (Integer.toString(mDataset.get(position).getLikesCount())));
 
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -154,6 +155,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
                         likefromdoc = document.get("likes");
                         if (likefromdoc == null){
                             Log.d(TAG, "is already liked ::: no like ");
+                            likebtn.setText("like");
                         } else { // 좋아요 했을때
 //                            Log.d(TAG, "is already liked ::: "+ likefromdoc.toString());
                             String[] liked = likefromdoc.toString().split("=");
@@ -192,17 +194,21 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MainViewHolder
 //                if (likefromdoc.toString().split("=")[0].contains(currentUserUID)){
 //
 //                }
-                if (thisData.getLikes().containsKey(currentUserUID)){ //이미 눌렀던 상태
+                if (thisData.getLikes().containsValue(true)){
+//                if (thisData.getLikes().containsKey(currentUserUID)){ //이미 눌렀던 상태
                     Log.d(TAG, "3  ::  ");
                     likebtn.setText("like"); // 다시 라이크로 돌리고
                     thisData.setLikesCount(thisData.getLikesCount() - 1); // 좋아요 수 하나빼기
                     thisData.getLikes().remove(currentUserUID); // 눌럿던거 지우기
+                    likeyCancel.put(null,null);
+                    thisData.setLikes(likeyCancel);
                     postDoc.update("likes", null);
                     likeCounter.setText(Integer.toString(thisData.getLikesCount()));
                     postDoc.update("likesCount", thisData.getLikesCount() );
                 } else { // 좋아요 누르기
                     Log.d(TAG, "4  ::  ");
                     likebtn.setText("liked"); // 좋아요
+                    thisData.setLikes(likey);
                     thisData.setLikesCount(thisData.getLikesCount() + 1); // 좋아요 수 +
                     thisData.getLikes().put(currentUserUID,true);
                     postDoc.update("likes", likey);

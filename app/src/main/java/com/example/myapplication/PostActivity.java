@@ -53,6 +53,7 @@ public class PostActivity extends BasicActivity {
 
     String TAG = "post activity :: ";
     Map<String, Boolean> likey = new HashMap<>();
+    Map<String, Boolean> likeyCancel = new HashMap<>();
     Map<String, Boolean> isAlreadyliked = new HashMap<>();
     Object likefromdoc;
 
@@ -145,6 +146,7 @@ public class PostActivity extends BasicActivity {
                         likefromdoc = document.get("likes");
                         if (likefromdoc == null){
                             Log.d(TAG, "is already liked ::: no like ");
+                            likebtn.setText("like");
                         } else { // 좋아요 했을때
 //                            Log.d(TAG, "is already liked ::: "+ likefromdoc.toString());
                             String[] liked = likefromdoc.toString().split("=");
@@ -176,17 +178,21 @@ public class PostActivity extends BasicActivity {
                 Log.d(TAG, "1  ::  "+ likey.toString());
                 DocumentReference postDoc = firebaseFirestore.collection("posts").document(id);
                 Log.d(TAG, "2  ::  "+ postDoc);
-                if (postInfo.getLikes().containsKey(currentUserUID)){ //이미 눌렀던 상태
+//                if (postInfo.getLikes().containsKey(currentUserUID)){ //이미 눌렀던 상태
+                if (postInfo.getLikes().containsValue(true)){
                     Log.d(TAG, "3  ::  ");
                     likebtn.setText("like"); // 다시 라이크로 돌리고
                     postInfo.setLikesCount(postInfo.getLikesCount() - 1); // 좋아요 수 하나빼기
                     postInfo.getLikes().remove(currentUserUID); // 눌럿던거 지우기
+                    likeyCancel.put(null,null);
+                    postInfo.setLikes(likeyCancel);
                     postDoc.update("likes", null);
                     likeCounter.setText(Integer.toString(postInfo.getLikesCount()));
                     postDoc.update("likesCount", postInfo.getLikesCount() );
                 } else { // 좋아요 누르기
                     Log.d(TAG, "4  ::  ");
                     likebtn.setText("liked"); // 좋아요
+                    postInfo.setLikes(likey);
                     postInfo.setLikesCount(postInfo.getLikesCount() + 1); // 좋아요 수 +
                     postInfo.getLikes().put(currentUserUID,true);
                     postDoc.update("likes", likey);
