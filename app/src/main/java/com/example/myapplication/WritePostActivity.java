@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -305,5 +307,32 @@ public class WritePostActivity extends BasicActivity {
         Intent intent = new Intent(this, c);
         intent.putExtra("media", media);
         startActivityForResult(intent, requestCode);
+    }
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("글 작성을 취소하시겠습니까?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("예", new AlertDialog.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                exit();
+            }
+        });
+
+        builder.setNegativeButton("아니요", new AlertDialog.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.setNeutralButton("취소", new AlertDialog.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.show();
+    }
+    public void exit() {
+        super.onBackPressed();
     }
 }

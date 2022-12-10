@@ -19,6 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.PopupMenu;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -299,6 +302,8 @@ public class PostActivity extends BasicActivity {
         getMenuInflater().inflate(R.menu.post,menu);
         return super.onCreateOptionsMenu(menu);
     }*/
+
+
 
 }
 
